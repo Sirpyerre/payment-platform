@@ -38,9 +38,10 @@ func (p *PaymentHandler) ProcessPayment(c echo.Context) error {
 	}
 
 	// Lógica para procesar un pago
-	if err := p.TransactionService.ProcessTransaction(transaction); err != nil {
+	err := p.TransactionService.ProcessTransaction(transaction)
+	if err != nil {
 		logger.GetLogger().Error("paymentHandler", "proccessPayment", err)
-		return c.JSON(http.StatusInternalServerError, echo.Map{
+		return c.JSON(http.StatusBadRequest, echo.Map{
 			"message": "Error processing payment",
 			"error":   err.Error(),
 		})

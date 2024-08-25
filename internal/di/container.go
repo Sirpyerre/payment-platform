@@ -4,6 +4,7 @@ import (
 	"github.com/Sirpyerre/payment-platform/config"
 	"github.com/Sirpyerre/payment-platform/internal/app/payment"
 	"github.com/Sirpyerre/payment-platform/internal/app/transactions"
+	"github.com/Sirpyerre/payment-platform/internal/banktransaction"
 	"github.com/Sirpyerre/payment-platform/internal/dbconnection"
 	"github.com/Sirpyerre/payment-platform/internal/repository"
 	"github.com/Sirpyerre/payment-platform/internal/service"
@@ -33,6 +34,7 @@ func buildContainer() *dig.Container {
 		c.Provide(logger.NewLog),
 		c.Provide(config.NewConfiguration),
 		c.Provide(dbconnection.NewDBConnection),
+		c.Provide(banktransaction.NewBankTransaction),
 		c.Provide(repository.NewTransactionRepository),
 		c.Provide(service.NewTransactionService),
 		c.Provide(payment.NewPaymentHandler),
