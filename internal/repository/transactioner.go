@@ -3,5 +3,6 @@ package repository
 import "github.com/Sirpyerre/payment-platform/internal/models"
 
 type Transactioner interface {
-	Process(model *models.TransactionsModel) error
+	Process(*models.TransactionsModel) error
+	GetTransaction(int) (*models.TransactionsModel, error)
 }

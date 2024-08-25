@@ -5,6 +5,7 @@ import (
 	"github.com/Sirpyerre/payment-platform/internal/banktransaction"
 	"github.com/Sirpyerre/payment-platform/internal/models"
 	"github.com/Sirpyerre/payment-platform/internal/repository"
+	"strconv"
 	"time"
 )
 
@@ -31,12 +32,25 @@ func (s *TransactionService) ProcessTransaction(transaction *models.Transactions
 		return err
 	}
 
+	transactionBankID, err := strconv.Atoi(responsePayment.TransactionID)
+	if err != nil {
+		return err
+	}
+
 	transaction.Status = responsePayment.Status
-	transaction.TransactionBankID = responsePayment.TransactionID
+	transaction.TransactionBankID = transactionBankID
 	if err := s.TransactionRepository.Process(transaction); err != nil {
 		return err
 	}
 
 	return nil
+}
 
+func (s *TransactionService) GetTransaction(transactionID int) (*models.TransactionsModel, error) {
+	transaction, err := s.TransactionRepository.GetTransaction(transactionID)
+	if err != nil {
+		return nil, err
+	}
+
+	return transaction, nil
 }

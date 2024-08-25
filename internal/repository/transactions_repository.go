@@ -45,3 +45,35 @@ func (t *TransactionRepository) Process(transaction *models.TransactionsModel) e
 
 	return nil
 }
+
+func (t *TransactionRepository) GetTransaction(transactionID int) (*models.TransactionsModel, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), t.QueryTimeout)
+	defer cancel()
+
+	query := `SELECT merchant_id, customer_id, amount, status, 
+       NULLIF(transaction_bank_id,0), created_at
+		FROM transactions
+		WHERE id = $1
+	`
+
+	prepContext, err := t.Connector.DB.PrepareContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer prepContext.Close()
+
+	transaction := new(models.TransactionsModel)
+	err = prepContext.QueryRowContext(ctx, transactionID).Scan(
+		&transaction.MerchantID,
+		&transaction.CustomerID,
+		&transaction.Amount,
+		&transaction.Status,
+		&transaction.TransactionBankID,
+		&transaction.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return transaction, nil
+}

@@ -4,6 +4,7 @@ import (
 	"github.com/Sirpyerre/payment-platform/internal/service"
 	"github.com/Sirpyerre/payment-platform/pkg/logger"
 	"net/http"
+	"strconv"
 
 	"github.com/Sirpyerre/payment-platform/internal/customvalidator"
 	"github.com/Sirpyerre/payment-platform/internal/models"
@@ -51,8 +52,24 @@ func (p *PaymentHandler) ProcessPayment(c echo.Context) error {
 }
 
 func (p *PaymentHandler) GetPayment(c echo.Context) error {
-	// Lógica para obtener detalles de un pago
-	return c.JSON(http.StatusOK, "Payment details")
+	id := c.Param("id")
+	// convertir transactionID a int
+	transactionID, err := strconv.Atoi(id)
+	if err != nil {
+		logger.GetLogger().Error("paymentHandler", "getPayment", err)
+	}
+
+	// Lógica para obtener los detalles de un pago
+	transaction, err := p.TransactionService.GetTransaction(transactionID)
+	if err != nil {
+		logger.GetLogger().Error("paymentHandler", "getPayment", err)
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": "Error getting payment details",
+			"error":   err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, transaction)
 }
 
 func (p *PaymentHandler) ProcessRefund(c echo.Context) error {
