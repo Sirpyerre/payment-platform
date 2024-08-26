@@ -19,10 +19,13 @@ type TransactionService struct {
 	BankTimeout           time.Duration
 }
 
-func NewTransactionService(transactionRepository *repository.TransactionRepository, bankService *banktransaction.BankTransaction,
+func NewTransactionService(transactionRepository *repository.TransactionRepository,
+	bankService *banktransaction.BankTransaction,
+	refundRepository *repository.RefundRepository,
 	cfg *config.Configuration) *TransactionService {
 	return &TransactionService{
 		TransactionRepository: transactionRepository,
+		RefundRepository:      refundRepository,
 		Config:                cfg,
 		BankTimeout:           time.Duration(cfg.BankProvider.Timeout) * time.Second,
 		BankService:           bankService,
@@ -63,6 +66,10 @@ func (s *TransactionService) RefundTransaction(transactionID int) error {
 	transaction, err := s.TransactionRepository.GetTransaction(transactionID)
 	if err != nil {
 		return err
+	}
+
+	if transaction.TransactionBankID == 0 {
+		return errors.New("transaction bank id is not available")
 	}
 
 	// Check if transaction is elegible for refund

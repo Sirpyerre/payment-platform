@@ -28,9 +28,10 @@ func (b *BankTransaction) ProcessTransaction() (*models.ResponsePayment, error) 
 	ctx, cancel := context.WithTimeout(context.Background(), b.Timeout)
 	defer cancel()
 
+	method := randomHTTPMethod()
 	url := fmt.Sprintf("%s/payments", b.Config.BankProvider.URL)
 	fmt.Println("url", url)
-	response, err := httpcall.MakeCall(ctx, "POST", url, nil)
+	response, err := httpcall.MakeCall(ctx, method, url, nil)
 	if err != nil {
 		logger.GetLogger().Error("TransactionService", "MakeCall", err)
 		return nil, err
@@ -71,4 +72,12 @@ func (b *BankTransaction) RefundTransaction(transactionBankID int) (*models.Resp
 	}
 
 	return responsePayment, nil
+}
+
+func randomHTTPMethod() string {
+	httpMethod := []string{"POST", "PUT"}
+	random := time.Now().UnixNano() % 2
+	fmt.Println(httpMethod[random])
+
+	return httpMethod[random]
 }

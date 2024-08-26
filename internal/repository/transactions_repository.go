@@ -2,10 +2,11 @@ package repository
 
 import (
 	"context"
+	"time"
+
 	"github.com/Sirpyerre/payment-platform/config"
 	"github.com/Sirpyerre/payment-platform/internal/dbconnection"
 	"github.com/Sirpyerre/payment-platform/internal/models"
-	"time"
 )
 
 type TransactionRepository struct {
@@ -51,7 +52,7 @@ func (t *TransactionRepository) GetTransaction(transactionID int) (*models.Trans
 	defer cancel()
 
 	query := `SELECT merchant_id, customer_id, amount, status, 
-       NULLIF(transaction_bank_id,0), created_at
+       transaction_bank_id, created_at
 		FROM transactions
 		WHERE id = $1
 	`
@@ -63,8 +64,8 @@ func (t *TransactionRepository) GetTransaction(transactionID int) (*models.Trans
 	defer prepContext.Close()
 
 	transaction := new(models.TransactionsModel)
+	transaction.ID = transactionID
 	err = prepContext.QueryRowContext(ctx, transactionID).Scan(
-		&transaction.ID,
 		&transaction.MerchantID,
 		&transaction.CustomerID,
 		&transaction.Amount,
@@ -83,14 +84,16 @@ func (t *TransactionRepository) UpdateTransactionStatus(transaction *models.Tran
 	ctx, cancel := context.WithTimeout(context.Background(), t.QueryTimeout)
 	defer cancel()
 
-	query := `UPDATE transactions SET status = $1 WHERE id = $2`
+	updatedAt := time.Now()
+
+	query := `UPDATE transactions SET status = $1, updated_at= $2 WHERE id = $3`
 	prepContext, err := t.Connector.DB.PrepareContext(ctx, query)
 	if err != nil {
 		return err
 	}
 	defer prepContext.Close()
 
-	_, err = prepContext.ExecContext(ctx, transaction.ID, status)
+	_, err = prepContext.ExecContext(ctx, status, updatedAt, transaction.ID)
 	if err != nil {
 		return err
 	}

@@ -48,7 +48,9 @@ func (p *PaymentHandler) ProcessPayment(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, "Payment processed")
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "Payment processed successfully",
+	})
 }
 
 func (p *PaymentHandler) GetPayment(c echo.Context) error {
@@ -72,7 +74,7 @@ func (p *PaymentHandler) GetPayment(c echo.Context) error {
 
 func (p *PaymentHandler) ProcessRefund(c echo.Context) error {
 	transactionID, err := paramToInt(c, "id")
-	if err != nil {
+	if err != nil && transactionID < 1 {
 		return c.JSON(http.StatusBadRequest, "Invalid transaction ID")
 	}
 

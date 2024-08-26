@@ -56,27 +56,5 @@ func setRoutes(paymentHandler *payment.PaymentHandler, transaction *transactions
 			paymentHandler.ProcessRefund,
 			nil,
 		},
-
-		Route{
-			"GetTransaction",
-			"GET",
-			"/api/v1/transactions/:id",
-			transaction.GetTransaction,
-			nil,
-		},
-		Route{
-			"CreateTransaction",
-			"POST",
-			"/api/v1/transactions",
-			transaction.CreateTransaction,
-			nil,
-		},
-		Route{
-			"EditTransaction",
-			"PUT",
-			"/api/v1/transactions/:id/status",
-			transaction.UpdateTransactionStatus,
-			nil,
-		},
 	}
 }
