@@ -35,6 +35,7 @@ func buildContainer() *dig.Container {
 		c.Provide(config.NewConfiguration),
 		c.Provide(dbconnection.NewDBConnection),
 		c.Provide(banktransaction.NewBankTransaction),
+		c.Provide(repository.NewRefundRepository),
 		c.Provide(repository.NewTransactionRepository),
 		c.Provide(service.NewTransactionService),
 		c.Provide(payment.NewPaymentHandler),

@@ -64,6 +64,7 @@ func (t *TransactionRepository) GetTransaction(transactionID int) (*models.Trans
 
 	transaction := new(models.TransactionsModel)
 	err = prepContext.QueryRowContext(ctx, transactionID).Scan(
+		&transaction.ID,
 		&transaction.MerchantID,
 		&transaction.CustomerID,
 		&transaction.Amount,
@@ -76,4 +77,23 @@ func (t *TransactionRepository) GetTransaction(transactionID int) (*models.Trans
 	}
 
 	return transaction, nil
+}
+
+func (t *TransactionRepository) UpdateTransactionStatus(transaction *models.TransactionsModel, status string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), t.QueryTimeout)
+	defer cancel()
+
+	query := `UPDATE transactions SET status = $1 WHERE id = $2`
+	prepContext, err := t.Connector.DB.PrepareContext(ctx, query)
+	if err != nil {
+		return err
+	}
+	defer prepContext.Close()
+
+	_, err = prepContext.ExecContext(ctx, transaction.ID, status)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -48,3 +48,27 @@ func (b *BankTransaction) ProcessTransaction() (*models.ResponsePayment, error) 
 
 	return responsePayment, nil
 }
+
+func (b *BankTransaction) RefundTransaction(transactionBankID int) (*models.ResponsePayment, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), b.Timeout)
+	defer cancel()
+
+	url := fmt.Sprintf("%s/payments/%d/refund", b.Config.BankProvider.URL, transactionBankID)
+	response, err := httpcall.MakeCall(ctx, "POST", url, nil)
+	if err != nil {
+		logger.GetLogger().Error("TransactionService", "MakeCall", err)
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != 200 {
+		return nil, fmt.Errorf("error in banktransaction provider: %d", response.StatusCode)
+	}
+
+	responsePayment := new(models.ResponsePayment)
+	if err := json.NewDecoder(response.Body).Decode(responsePayment); err != nil {
+		return nil, err
+	}
+
+	return responsePayment, nil
+}

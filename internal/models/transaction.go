@@ -5,7 +5,7 @@ import (
 )
 
 type TransactionsModel struct {
-	ID                int       `json:"-"`
+	ID                int       `db:"id" json:"-"`
 	MerchantID        int       `json:"merchant_id" validate:"required"`
 	CustomerID        int       `json:"customer_id" validate:"required"`
 	TransactionBankID int       `json:"transaction_bank_id"`
