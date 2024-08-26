@@ -77,12 +77,12 @@ PAYMENT_BANK_TIMEOUT=
    createdb payment-platform
    ```
 
-4. **Run Database Migrations**:
+4. **Run Database backup: `schema.sql`**:
 
-   Apply database migrations to set up the necessary tables.
+   Run the `schema.sql` file to create the necessary tables in the `payment-platform` database.
 
    ```bash
-   go run cmd/migrate.go
+   psql -d payment-platform -a -f schema.sql
    ```
 
 5. **Set Up WireMock**:
@@ -118,6 +118,12 @@ The following endpoints are available in the API:
     - **Endpoint**: `/api/v1/payment/:id/refund`
     - **Description**: Processes a refund for a specific transaction.
 
+4. **Login User**
+    - **Method**: `POST`
+    - **Endpoint**: `/api/v1/user/login`
+    - **Description**: Logs in a user to the online payment platform.
+    - **Note**: Default user credentials are `peter` and `shhh!`.
+
 ## Testing the API
 
 After the application is up and running, you can use tools like Postman or cURL to interact with the API endpoints. Ensure that WireMock is running as your bank simulator to properly test payment processing and refunds.
@@ -125,11 +131,3 @@ After the application is up and running, you can use tools like Postman or cURL 
 ## Contributing
 
 If you'd like to contribute, please fork the repository and use a feature branch. Pull requests are welcome.
-
-## License
-
-This project is open-source and available under the [MIT License](LICENSE).
-
----
-
-This README provides clear instructions and explanations for setting up and running the project, making it easy for any developer to get started.
