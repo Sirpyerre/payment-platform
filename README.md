@@ -66,7 +66,7 @@ PAYMENT_BANK_TIMEOUT=
    Make sure all dependencies are installed by running:
 
    ```bash
-   go mod tidy
+   go mod tidy; go mod vendor
    ```
 
 3. **Set Up PostgreSQL**:
@@ -123,6 +123,8 @@ The following endpoints are available in the API:
     - **Endpoint**: `/api/v1/user/login`
     - **Description**: Logs in a user to the online payment platform.
     - **Note**: Default user credentials are `peter` and `shhh!`.
+
+All endpoints require a valid JWT token to be passed in the `Authorization` header. The token can be obtained by logging in with the user credentials.
 
 ## Testing the API
 

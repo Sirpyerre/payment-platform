@@ -30,7 +30,6 @@ func (b *BankTransaction) ProcessTransaction() (*models.ResponsePayment, error) 
 
 	method := randomHTTPMethod()
 	url := fmt.Sprintf("%s/payments", b.Config.BankProvider.URL)
-	fmt.Println("url", url)
 	response, err := httpcall.MakeCall(ctx, method, url, nil)
 	if err != nil {
 		logger.GetLogger().Error("TransactionService", "MakeCall", err)

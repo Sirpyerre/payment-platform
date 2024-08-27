@@ -72,7 +72,7 @@ func (s *TransactionService) RefundTransaction(transactionID int) error {
 		return errors.New("transaction bank id is not available")
 	}
 
-	// Check if transaction is elegible for refund
+	// Check if transaction is eligible for refund
 	if transaction.Status != "success" {
 		return errors.New("transaction is not elegible for refund")
 	}
